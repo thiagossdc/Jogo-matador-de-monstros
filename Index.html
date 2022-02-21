@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>O matador de monstros</title>
+        <link rel="stylesheet" href="estilo.css">
+        <script src="https://unpkg.com/vue"></script>
+    </head>
+    <body>
+        <div id="app">
+            <div class="panel scores">
+                <div class="score">
+                    <h1>Jogador</h1>
+                    <div class="life-bar">
+                        <div class="life" :class="{danger: playerLife < 20}" :style="{width: playerLife + '%'}"></div>
+                    </div>
+                    <div>{{ playerLife }}%</div>
+                </div>
+                <div class="score">
+                    <h1>Monstro</h1>
+                    <div class="life-bar">
+                        <div class="life" :class="{danger: monsterLife < 20}" :style="{width: monsterLife + '%'}"></div>
+                    </div>
+                    <div>{{ monsterLife }}%</div>
+                </div>
+            </div>
+            <div v-if="hasResult" class="panel result">
+                <div v-if="monsterLife == 0" class="win" v-model="playerLife=100, monsterLife=100">Você Ganhou!!! :)</div>
+                <div v-else class="lose">Você perdeu! :(</div>
+            <div class="dado">
+                    <h3>Número par = Ataque</h3>
+                    <h3>Número impar = Especial</h3>
+                    <button onclick="jogar()">Lançar Dados</button><br />
+                    Sorteado: <div id="resp"></div>
+                   
+                    <script type="text/javascript">
+                     function jogar()
+                     {
+                       var resp = document.getElementById('resp');
+                       resp.innerHTML = Math.floor( 1 + 6*Math.random() );
+                     }
+                    </script> </div>
+            </div>
+            <div class="panel buttons">
+                <template v-if="running">
+                    <button @click="attack(false)" class="btn attack">Ataque</button>
+                    <button @click="attack(true)" class="btn especial-attack">Ataque Especial</button>
+                    <button @click="healAndHurt();counter+=1" v-if="counter < 3" class="btn heal">Curar</button>
+                    <button v-else class="btn heal">Curar</button>
+                    <button @click="running = false; playerLife=100; monsterLife=100, counter=0" class="btn give-up">Desistir</button>
+                </template>
+                <button v-if="!running" @click="startGame" class="btn new-game">Iniciar Jogo</button>
+                <button v-if="!running" @click="instructions()" class="btn new-game">Instruções</button>
+            </div>
+            <div v-if="instructionsControll && !running" class="panel instructions">
+                <div class="panel player">
+                    Escolha a melhor estratégia para matar o monstro.
+                </div>
+                <div class="panel player">
+                    Você só pode se curar 3X. Tenha um bom jogo!!!
+                </div>
+            </div>
+            <div v-if="logs.length && running" class="panel logs">
+                <ul>
+                    <li class="player" v-if="counter>=1">
+                        Você usou {{counter}} vezes a opção curar.
+                    </li>
+                    <li v-for="log in logs" :class="log.cls" class="log">
+                        {{ log.text }}
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <script src="app.js"></script>
+    </body>
+    
+    </html>
+
